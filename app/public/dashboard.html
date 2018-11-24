@@ -1,0 +1,111 @@
+<html>
+    <head>
+        <title>Dashboard</title>
+   <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
+
+    <script>
+
+        $(document).ready(function() {
+
+            $('#uploadForm').submit(function() {
+                $("#status").empty().text("File is uploading...");
+                $(this).ajaxSubmit({
+                    error: function(xhr) {
+                        console.log(xhr);
+                        status('Error: ' + xhr.status);
+                    },
+                    success: function(response) {
+                        $("#status").empty().text(response);
+                        console.log(response)
+                    }
+                });
+                return false;
+            }); 
+
+
+            $.ajax({
+                url: "/filedownload",
+                method: "get",
+                success: function(data){
+                    downloadArray = data;
+                    for (i = 0; i < downloadArray.length; i++){
+                        console.log(downloadArray[i]);
+                        console.log(typeof downloadArray[i]);
+                        myref = "/filedownload/" + downloadArray[i];
+                        $('#downloadList').append("<a href='" + myref + "' onclick='downloadFile(this)'>" + downloadArray[i] + "</a><br>");
+
+                    }
+                }
+            });
+        });
+        function downloadFile(selectedFile){
+            fileToDownload = $(selectedFile).text();
+            console.log(fileToDownload);
+            var dnldurl = "/filedownload/" + fileToDownload;
+            $.ajax({
+                url: dnldurl,
+                method: "get",
+                success: function(){
+                    console.log(dnldurl);
+                    console.log('successful downloading');
+                }
+            });
+        }
+    </script>  
+    
+   </head>
+    <body class="container">
+        <div class="page-header">
+            <h1>My Authentication and File Download Upload </h1>
+        </div>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/tasks">Home</a></li>
+                        <li><a href="/tasks/2">Home2</a></li>
+                        <li><a href="/signup">Sign Up</a></li>
+                        <li><a href="/dashboard">Dashboard</a></li>
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/login">Log In</a></li>
+                        <li><a href="/logout">Log Out</a></li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+
+        <div class="container row">
+           <h1>Welcome to Dashboard</h1>
+        </div>
+        
+    </br></br></br>    
+    <form id="uploadForm"
+        enctype="multipart/form-data"
+        action="/fileupload"
+        method="post">
+        <input type="file" name="userPhoto" multiple />
+        <input type="submit" value="Upload" name="submit">
+        <input type='text' id='random' name='random'><br>
+        <span id = "status"></span>
+    </form>
+    </br></br></br>
+    <div>
+        <h2> Uploaded Files for download </h2>
+    </div>
+    <div id='downloadList'></div>
+        
+        
+    </body>
+</html>
