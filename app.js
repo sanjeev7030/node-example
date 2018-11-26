@@ -44,14 +44,14 @@ console.log('API server started on: ' + port);
     }
 }));
   
-  app.use((req, res, next) => {
-    if (req.cookies.user_sid && !req.session.user) {
-        res.clearCookie('user_sid');        
-    }
-    next();
-});
+//   app.use((req, res, next) => {
+//     if (req.cookies.user_sid && !req.session.user) {
+//         res.clearCookie('user_sid');        
+//     }
+//     next();
+// });
 
-var Auth = require('./app/controller/authController');
+// var Auth = require('./app/controller/authController');
 var authroutes = require('./app/routes/authRoutes'); //importing route
 var fileRoutes = require('./app/routes/fsRoutes'); //importing route
 var routes = require('./app/routes/appRoutes'); //importing route
