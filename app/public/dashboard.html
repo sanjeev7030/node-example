@@ -15,7 +15,7 @@
     <script>
 
         $(document).ready(function() {
-
+            
             $('#uploadForm').submit(function() {
                 $("#status").empty().text("File is uploading...");
                 $(this).ajaxSubmit({
@@ -30,7 +30,10 @@
                 });
                 return false;
             }); 
-
+        
+            var myTRef = getQueryString('token');
+            $('#task').append("<a href=/tasks?token=" + myTRef.trim() + " </a > All Tasks <br>");
+            $('#task2').append("<a href=/tasks/2?token=" + myTRef.trim() + " </a >Tasks 2<br>");
 
             $.ajax({
                 url: "/filedownload",
@@ -40,13 +43,21 @@
                     for (i = 0; i < downloadArray.length; i++){
                         console.log(downloadArray[i]);
                         console.log(typeof downloadArray[i]);
-                        myref = "/filedownload/" + downloadArray[i];
+                        myref = "/filedownload/" + downloadArray[i] +"/?token="+ getQueryString('token');
                         $('#downloadList').append("<a href='" + myref + "' onclick='downloadFile(this)'>" + downloadArray[i] + "</a><br>");
 
                     }
                 }
             });
         });
+        var getQueryString = function (field, url) {
+                var href = url ? url : window.location.href;
+                var reg = new RegExp('[?&]' + field + '=([^&#]*)', 'i');
+                var string = reg.exec(href);
+                return string ? string[1] : null;
+            };
+        
+
         function downloadFile(selectedFile){
             fileToDownload = $(selectedFile).text();
             console.log(fileToDownload);
@@ -73,9 +84,11 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li><a href="/tasks">Home</a></li>
+                        <li><div id='task'></div></li>
                         <li><a href="/tasks/2">Home2</a></li>
+                        <li><div id='task2'></div></li>
                         <li><a href="/signup">Sign Up</a></li>
-                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href= '' >Dashboard</a></li>
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">

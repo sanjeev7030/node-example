@@ -9,11 +9,11 @@
      
 // route for user Login
     app.route('/login')
-    .get(Auth.sessionChecker, (req, res) => {
+    .get((req, res) => {
         console.log('login get');
         res.sendFile(path.join(__dirname, '../public/login.html'));
     })
-    .post( (req, res, next) => {
+    .post((req, res) => {
         var username = req.body.name,
             password = req.body.password;
         console.log('login Post');
@@ -21,11 +21,13 @@
         console.log(myquery);
 
         sql.myAsyncQuery(myquery)
-            .then((result) => {
+            .then(async (result) => {
                 try {
                     result.forEach(x => console.log(x))
-                    req.session.user = username;
-                    res.sendFile(path.join(__dirname, '../public/dashboard.html'));
+                    var token = await Auth.jwtTokenCGenerator(username);
+                    //res.set('token',token);
+                    console.log('login token =>'+ token)
+                    res.redirect('/dashboard'+ '/?token=' + token);
                 }
                 catch (err) {
                     console.log("User and password does not match");
@@ -40,7 +42,7 @@
         .get(Auth.sessionChecker, (req, res) => {
              res.sendFile(path.join(__dirname, '../public/signup.html'));
         })
-        .post((req, res) => {
+        .post( (req, res) => {
             var username = req.body.name,
                 password = req.body.password,
                 location = req.body.location;
@@ -50,11 +52,12 @@
 
 
             sql.myAsyncQuery(myquery)
-                .then((result) => {
+                .then(async (result) => {
                     try {
 
-                        req.session.user = username;
-                        res.redirect('/tasks/' + result.insertId);
+                        var token = await Auth.jwtTokenCGenerator(username);
+                        console.log('Signup token =>'+ token);
+                        res.redirect('/tasks/' + result.insertId + '/?token=' + token);
                     }
                     catch (err) {
                         console.log("Please input correct values");
@@ -66,12 +69,19 @@
     
 //route for Dashboard
 app.route('/dashboard')
-    .get(Auth.sessionChecker, (req, res) => {
+    .get(async (req, res) => {
         console.log('login dashboard');
-        res.sendFile(path.join(__dirname, '../public/dashboard.html'));
+        try{
+             var token = await Auth.jwtTokenChecker(req,res);
+             console.log('Checked token =>'+ token); 
+        res.sendFile(path.join(__dirname, '../public/dashboard.html') ,{headers:{'x-access-token':token}}); 
+        }
+        catch(e){
+            console.log('err login dashboard' + e);
+        }
+      
     })     
- 
-    
+     
 // route for user logout
     app.get('/logout', (req, res) => {
         if (req.session.user && req.cookies.user_sid) {

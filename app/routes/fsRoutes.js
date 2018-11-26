@@ -2,6 +2,7 @@ var multer = require('multer');
 var path = require('path');
 var fs = require('fs');
 var util = require('util');
+var Auth = require('../controller/authController');
 
 
 module.exports = function (app) {
@@ -22,11 +23,12 @@ module.exports = function (app) {
   });
 
 
-  app.route('/filedownload/:file(*)').get(function (req, res, next) {
+  app.route('/filedownload/:file(*)').get(  async (req, res, next)=> {
     var file = req.params.file;
     var dpath = path.resolve(".") + '/app/public/uploaded/' + file;
     console.log(file + " Path = " + dpath);
-
+    var token =  await Auth.jwtTokenChecker(req, res);
+    if(token)
     res.download(dpath, file, function (err) {
       if (err) {
         console.log(err);

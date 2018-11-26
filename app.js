@@ -2,28 +2,30 @@ const express = require('express'),
   bodyParser = require('body-parser');
   var http = require('http');
   var port = (process.env.PORT || '3000');
-const mysql = require('mysql');  
+  var mysql = require('mysql');  
   var session = require('express-session');
   var cookieParser = require('cookie-parser');
+  var config = require('./app/config'); // get config file
   
-  
+
+
   var app = express();
   app.set('port', port);
 
 
 // connection configurations
 const mc = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'nodedb'
+    host: config.host,
+    user: config.user,
+    password: config.password,
+    database: config.database
 });
  
 // connect to database
 mc.connect();
 
 
- app.listen(port);
+app.listen(port);
 
 
 console.log('API server started on: ' + port);
@@ -54,7 +56,7 @@ var authroutes = require('./app/routes/authRoutes'); //importing route
 var fileRoutes = require('./app/routes/fsRoutes'); //importing route
 var routes = require('./app/routes/appRoutes'); //importing route
 
-  app.use(Auth.sessionChecker);  
+  //app.use(Auth.jwtTokenChecker);  
   routes(app); //register the route
   authroutes(app); //register the authroute
   fileRoutes(app);  //register the fileroute

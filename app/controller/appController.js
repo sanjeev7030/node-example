@@ -1,9 +1,13 @@
 'use strict';
 
 var Task = require('../model/appModel.js');
+var Auth = require('../controller/authController');
+
 
 exports.list_all_tasks = async function (req, res) {
   try {
+    var token = await Auth.jwtTokenChecker(req, res);
+    if(token)
     await Task.getAllTask(function (err, task) {
       if (err)
         res.send(err);
@@ -40,6 +44,8 @@ exports.create_a_task = async function (req, res) {
 
 exports.read_a_task = async function (req, res) {
   try {
+    var token = await Auth.jwtTokenChecker(req, res);
+    if(token)
     await Task.getTaskById(req.params.taskId, function (err, task) {
       if (err)
         res.send(err);
