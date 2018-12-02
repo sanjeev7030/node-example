@@ -55,3 +55,36 @@ exports.jwtTokenCGenerator = async (user) => {
       // return the information including token as JSON
      return token;
 };
+
+exports.appJwtTokenChecker =async (req, res,next) => {
+  console.log('Authjwtcontroller');
+
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+ console.log('In appJwt Checking token=>>' + token);
+  // decode token
+  if (token) {
+
+    // verifies secret and checks exp
+    try{
+       username = await jwt.verify(token,config.secret); 
+      console.log('In appJwt ' + JSON.stringify(username)); 
+      next();
+      return token;
+    }
+    catch(e){
+       return res.json({ success: false, message: 'Failed to authenticate token.' });
+    }
+   
+
+  } else {
+
+    // if there is no token
+    // return an error
+    return res.status(403).send({
+      success: false,
+      message: 'No token provided.'
+    });
+
+  }
+};

@@ -1,36 +1,40 @@
 <html>
-    <head>
-        <title>Dashboard</title>
-   <!-- Latest compiled and minified CSS -->
+
+<head>
+    <title>Dashboard</title>
+    <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
 
     <script>
 
-        $(document).ready(function() {
-            
-            $('#uploadForm').submit(function() {
+        $(document).ready(function () {
+
+            $('#uploadForm').submit(function () {
                 $("#status").empty().text("File is uploading...");
                 $(this).ajaxSubmit({
-                    error: function(xhr) {
+                    error: function (xhr) {
                         console.log(xhr);
                         status('Error: ' + xhr.status);
                     },
-                    success: function(response) {
+                    success: function (response) {
                         $("#status").empty().text(response);
                         console.log(response)
                     }
                 });
                 return false;
-            }); 
-        
+            });
+
             var myTRef = getQueryString('token');
             $('#task').append("<a href=/tasks?token=" + myTRef.trim() + " </a > All Tasks <br>");
             $('#task2').append("<a href=/tasks/2?token=" + myTRef.trim() + " </a >Tasks 2<br>");
@@ -38,12 +42,12 @@
             $.ajax({
                 url: "/filedownload",
                 method: "get",
-                success: function(data){
+                success: function (data) {
                     downloadArray = data;
-                    for (i = 0; i < downloadArray.length; i++){
+                    for (i = 0; i < downloadArray.length; i++) {
                         console.log(downloadArray[i]);
                         console.log(typeof downloadArray[i]);
-                        myref = "/filedownload/" + downloadArray[i] +"/?token="+ getQueryString('token');
+                        myref = "/filedownload/" + downloadArray[i] + "/?token=" + getQueryString('token');
                         $('#downloadList').append("<a href='" + myref + "' onclick='downloadFile(this)'>" + downloadArray[i] + "</a><br>");
 
                     }
@@ -51,74 +55,113 @@
             });
         });
         var getQueryString = function (field, url) {
-                var href = url ? url : window.location.href;
-                var reg = new RegExp('[?&]' + field + '=([^&#]*)', 'i');
-                var string = reg.exec(href);
-                return string ? string[1] : null;
-            };
-        
+            var href = url ? url : window.location.href;
+            var reg = new RegExp('[?&]' + field + '=([^&#]*)', 'i');
+            var string = reg.exec(href);
+            return string ? string[1] : null;
+        };
 
-        function downloadFile(selectedFile){
+
+        function downloadFile(selectedFile) {
             fileToDownload = $(selectedFile).text();
             console.log(fileToDownload);
             var dnldurl = "/filedownload/" + fileToDownload;
             $.ajax({
                 url: dnldurl,
                 method: "get",
-                success: function(){
+                success: function () {
                     console.log(dnldurl);
                     console.log('successful downloading');
                 }
             });
         }
-    </script>  
-    
-   </head>
-    <body class="container">
-        <div class="page-header">
-            <h1>My Authentication and File Download Upload </h1>
-        </div>
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <li><a href="/tasks">Home</a></li>
-                        <li><div id='task'></div></li>
-                        <li><a href="/tasks/2">Home2</a></li>
-                        <li><div id='task2'></div></li>
-                        <li><a href="/signup">Sign Up</a></li>
-                        <li><a href= '' >Dashboard</a></li>
-                    </ul>
+    </script>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <li><a href="/login">Log In</a></li>
-                        <li><a href="/logout">Log Out</a></li>
-                    </ul>
-                </div><!-- /.navbar-collapse -->
-            </div><!-- /.container-fluid -->
-        </nav>
+</head>
 
-        <div class="container row">
-           <h1>Welcome to Dashboard</h1>
-        </div>
-        
-    </br></br></br>    
-    <form id="uploadForm"
-        enctype="multipart/form-data"
-        action="/fileupload"
-        method="post">
+<body class="container">
+    <div class="page-header">
+        <h1>My Authentication and File Download Upload </h1>
+    </div>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="/tasks">Home</a></li>
+                    <li>
+                        <div id='task'></div>
+                    </li>
+                    <li><a href="/tasks/2">Home2</a></li>
+                    <li>
+                        <div id='task2'></div>
+                    </li>
+                    <li><a href="/signup">Sign Up</a></li>
+                    <li><a href=''>Dashboard</a></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/login">Log In</a></li>
+                    <li><a href="/logout">Log Out</a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+    <div class="container row">
+        <h1>Welcome to Dashboard</h1>
+    </div>
+
+    </br></br></br>
+    <form id="uploadForm" enctype="multipart/form-data" action="/fileupload" method="post">
         <input type="file" name="userPhoto" multiple />
         <input type="submit" value="Upload" name="submit">
         <input type='text' id='random' name='random'><br>
-        <span id = "status"></span>
+        <span id="status"></span>
     </form>
     </br></br></br>
     <div>
-        <h2> Uploaded Files for download </h2>
+        <h2> Uploaded Files for download (Using Ajax to populate)</h2>
     </div>
     <div id='downloadList'></div>
-        
-        
-    </body>
+    </br></br></br>
+  <h2> Using Angular to List users</h2>
+    <div ng-app="myApp" ng-controller="customersCtrl">
+        <table>
+            <tr ng-repeat="x in namesa">
+                <td>{{ x.id }} >>&nbsp;</td>
+                <td>{{ x.name }}</td>
+                <td>&nbsp;&nbsp; is in &nbsp;&nbsp;</td>
+                <td>{{ x.location }}</td>
+            </tr>
+        </table>
+        </br></br></br>
+        <h2> Uploaded Files for download (Using Angular to populate)</h2>
+        <table>
+            <tr ng-repeat="x in filenanes">
+         <script>
+             // var  myref = "/filedownload/" + {{ x }} + "/?token=" + getQueryString('token');
+            </script>     
+                <td> {{ x }} </td><td><a ng-href="/filedownload/{{x}}{{tkn}}" >Click to download {{x}}</a></td>
+            </tr>
+        </table>
+        </br></br></br></br></br></br>
+    </div>
+
+    <script>
+        var app = angular.module('myApp', []);
+        app.controller('customersCtrl', function ($scope, $http) {
+            var tkn = "/?token=" + getQueryString('token').trim();
+            var mylist = "/tasks" + tkn;
+            $scope.tkn = tkn;
+            console.log(mylist);
+            $http.get(mylist)
+                .then(function (response) { $scope.namesa = response.data; });
+            $http.get("/filedownload")
+                .then(function (response) { $scope.filenanes = response.data; });
+        });
+    </script>
+
+</body>
+
 </html>

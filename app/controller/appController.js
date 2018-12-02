@@ -6,8 +6,8 @@ var Auth = require('../controller/authController');
 
 exports.list_all_tasks = async function (req, res) {
   try {
-    var token = await Auth.jwtTokenChecker(req, res);
-    if(token)
+    // var token = await Auth.jwtTokenChecker(req, res);
+    // if(token)
     await Task.getAllTask(function (err, task) {
       if (err)
         res.send(err);
